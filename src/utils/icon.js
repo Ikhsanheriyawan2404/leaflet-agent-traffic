@@ -2,7 +2,6 @@ export function createAgentIcon({
   color = "blue",
   icon = null,
 } = {}) {
-  console.log({icon})
   if (icon) {
     return L.icon({
       iconUrl: icon,

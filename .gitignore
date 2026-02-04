@@ -14,3 +14,4 @@ yarn-error.log*
 coverage/
 logs/
 *.log
+.npmrc

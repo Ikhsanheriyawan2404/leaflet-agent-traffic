@@ -59,7 +59,6 @@ export default class AgentManager {
       throw new Error("RoadManager dependency is required.");
     }
 
-    await this.roadManager.load();
     const roadGraph = this.roadManager.getRoadGraph();
     const edges = roadGraph?.edges || [];
     const {

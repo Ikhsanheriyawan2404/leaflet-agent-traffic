@@ -20,12 +20,12 @@ export default class AgentTraffic {
 	}
 
 	async generateRoads(bounds) {
-  this.agentManager.clear();
+    this.agentManager.clear();
 		return this.roadManager.render(bounds);
 	}
 
 	async generateAgents(amount, options) {
-		return this.agentManager.createAgents(amount, options);
+    return this.agentManager.createAgents(amount, options);
 	}
 
 	play() {
@@ -48,22 +48,6 @@ export default class AgentTraffic {
 		if (this._rafId) cancelAnimationFrame(this._rafId);
 		this._rafId = null;
 		this._lastTs = null;
-	}
-
-	getRoadGraph() {
-		return this.roadManager.getRoadGraph();
-	}
-
-	getRoadIndex() {
-		return this.roadManager.getRoadIndex();
-	}
-
-	getAgentsData() {
-		return this.agentManager.getAgentsData();
-	}
-
-	updateAgentPosition(id, lat, lng) {
-		return this.agentManager.updateAgentPosition(id, lat, lng);
 	}
 
 	clear() {
