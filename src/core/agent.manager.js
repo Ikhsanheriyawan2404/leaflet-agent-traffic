@@ -31,7 +31,26 @@ export default class AgentManager {
     return route;
   }
 
-  async createAgents(amount, options = { color: "blue" }) {
+  _edgeHeading(edge) {
+    if (!edge || !edge.geom || edge.geom.length < 2) return 0;
+    const [[lng1, lat1], [lng2, lat2]] = edge.geom;
+    const angleRad = Math.atan2(lng2 - lng1, lat2 - lat1);
+    const deg = (angleRad * 180) / Math.PI;
+    return (deg + 360) % 360;
+  }
+
+  _setMarkerHeading(marker, heading) {
+    if (!marker || !Number.isFinite(heading)) return;
+    const el = typeof marker.getElement === "function" ? marker.getElement() : null;
+    if (!el) return;
+    const current = el.style.transform || "";
+    const cleaned = current.replace(/\s*rotate\([^)]*\)/g, "").trim();
+    el.style.transform = `${cleaned} rotate(${heading}deg)`;
+    el.style.transformOrigin = "center";
+    el.style.willChange = "transform";
+  }
+
+  async createAgents(amount, options) {
     if (!amount || amount <= 0) {
       throw new Error("Amount must be greater than zero.");
     }
@@ -43,7 +62,12 @@ export default class AgentManager {
     await this.roadManager.load();
     const roadGraph = this.roadManager.getRoadGraph();
     const edges = roadGraph?.edges || [];
-    const { color, routeLength = 12, speed = 12 } = options;
+    const {
+      color,
+      icon,
+      routeLength = 12,
+      speed = 12
+    } = options;
     
     if (edges.length === 0) {
       throw new Error("No road segments available to spawn agents.");
@@ -59,11 +83,13 @@ export default class AgentManager {
       this._nextId += 1;
 
       const marker = L.marker([lat, lng], {
-        icon: createAgentIcon(color)
+        icon: createAgentIcon({ color, icon })
       })
 
       marker.addTo(this.layerGroup);
       const route = this._buildRoute(roadGraph, edge.id, routeLength);
+
+      const heading = this._edgeHeading(edge);
 
       this.agents.push({
         id,
@@ -73,6 +99,7 @@ export default class AgentManager {
         routeIndex: 0,
         edgeOffset: edge.length * t,
         speed,
+        heading,
         marker,
       });
       this.agentIndex.insertPoint(id, lat, lng);
@@ -91,11 +118,13 @@ export default class AgentManager {
     this.agentIndex = new GridIndex();
   }
 
-  updateAgentPosition(id, lat, lng) {
+  updateAgentPosition(id, lat, lng, heading) {
     const agent = this.agents.find((a) => a.id === id);
     if (!agent) return null;
     agent.pos = { lat, lng };
+    if (Number.isFinite(heading)) agent.heading = heading;
     if (agent.marker) agent.marker.setLatLng([lat, lng]);
+    if (Number.isFinite(heading)) this._setMarkerHeading(agent.marker, heading);
     this.agentIndex.updatePoint(id, lat, lng);
     return agent;
   }
@@ -136,9 +165,12 @@ export default class AgentManager {
         const t = activeEdge.length > 0 ? agent.edgeOffset / activeEdge.length : 0;
         const lat = lat1 + (lat2 - lat1) * t;
         const lng = lng1 + (lng2 - lng1) * t;
+        const heading = this._edgeHeading(activeEdge);
         agent.pos = { lat, lng };
+        agent.heading = heading;
         if (agent.marker) agent.marker.setLatLng([lat, lng]);
-        this.agentIndex.updatePoint(agent.id, lat, lng);
+        this._setMarkerHeading(agent.marker, heading);
+        this.agentIndex.updatePoint(agent.id, lat, lng, heading);
       }
     }
   }
