@@ -1,6 +1,6 @@
 {
   "name": "leaflet-agent-traffic",
-  "version": "0.9.0",
+  "version": "0.9.1",
   "description": "Leaflet plugin to render GeoJSON roads and generate static agents.",
   "main": "dist/leaflet-agent-traffic.umd.js",
   "module": "dist/leaflet-agent-traffic.es.js",
