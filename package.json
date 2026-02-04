@@ -1,0 +1,40 @@
+{
+  "name": "leaflet-agent-traffic",
+  "version": "0.9.0",
+  "description": "Leaflet plugin to render GeoJSON roads and generate static agents.",
+  "main": "dist/leaflet-agent-traffic.umd.js",
+  "module": "dist/leaflet-agent-traffic.es.js",
+  "type": "module",
+  "files": [
+    "dist"
+  ],
+  "exports": {
+    ".": {
+      "import": "./dist/leaflet-agent-traffic.es.js",
+      "require": "./dist/leaflet-agent-traffic.umd.js"
+    }
+  },
+  "keywords": [
+    "leaflet",
+    "geojson",
+    "maps",
+    "traffic",
+    "agent"
+  ],
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Ikhsanheriyawan2404/leaflet-agent-traffic.git"
+  },
+  "author": "Ikhsan Heriyawan <ikhsanheriyawan2404@gmail.com>",
+  "license": "ISC",
+  "peerDependencies": {
+    "leaflet": "^1.0.0"
+  },
+  "devDependencies": {
+    "vite": "^7.3.1"
+  }
+}
