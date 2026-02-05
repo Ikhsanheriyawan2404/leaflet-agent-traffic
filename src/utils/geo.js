@@ -88,9 +88,13 @@ export function featureInBounds(feature, bounds) {
 export async function fetchRoadsData(url) {
   const res = await fetch(url);
   if (!res.ok) {
-    throw new Error(
-      `Failed to fetch roads data: ${res.status} ${res.statusText}`
-    );
+    throw new Error(`Failed to fetch roads data: ${res.status} ${res.statusText}`);
   }
-  return res.json();
+
+  const text = await res.text();
+  try {
+    return JSON.parse(text);
+  } catch (err) {
+    throw new Error("Response is not valid JSON");
+  }
 }
