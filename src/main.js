@@ -32,11 +32,28 @@ export default class AgentTraffic {
 		if (this.state === "playing") return;
 		this.state = "playing";
 		this._lastTs = null;
+    // this._benchTime = 0;
+    // this._benchFrames = 0;
+    // this._benchLastLog = performance.now();
 		const tick = (ts) => {
 			if (this.state !== "playing") return;
 			if (this._lastTs == null) this._lastTs = ts;
-			const deltaSeconds = (ts - this._lastTs) / 1000;
+			const deltaSeconds = (ts - this._lastTs) / 1_000;
 			this._lastTs = ts;
+      // const t0 = performance.now();
+      this.agentManager.step(deltaSeconds);
+      // const elapsed = performance.now() - t0;
+      // this._benchTime += elapsed;
+      // this._benchFrames++;
+      // if (ts - this._benchLastLog >= 1000) {
+      //   console.log(
+      //     `Agent step CPU (1s): ${this._benchTime.toFixed(2)} ms | ` +
+      //     `frames: ${this._benchFrames}`
+      //   );
+      //   this._benchTime = 0;
+      //   this._benchFrames = 0;
+      //   this._benchLastLog = ts;
+      // }
 			this.agentManager.step(deltaSeconds);
 			this._rafId = requestAnimationFrame(tick);
 		};
@@ -56,5 +73,3 @@ export default class AgentTraffic {
 		this.agentManager.clear();
 	}
 }
-
-export { RoadManager, AgentManager };

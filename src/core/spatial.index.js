@@ -88,4 +88,9 @@ export default class GridIndex {
     for (const k of keys) this._removeFromCell(k, id);
     this.itemCells.delete(id);
   }
+  
+  clear() {
+    this.cells.clear();
+    this.itemCells.clear();
+  }
 }

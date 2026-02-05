@@ -42,22 +42,22 @@ export default class RoadManager {
       ),
     };
     
-    this.roadIndex = new GridIndex();
     this.roadGraph = buildRoadGraph(filtered, this.roadIndex);
-    
+
     this.layerGroup.clearLayers();
     const layer = L.geoJSON(filtered, {
       style: (feature) => {
         let color = "rgba(0, 255, 255, 0.7)";
         const { highway } = feature.properties || {};
         const highways = [...ALLOWED_HIGHWAYS]
-        if (highway.includes(highways[0] || highway.includes(highways[1]))) {
+        if (highway.includes(highways[0]) || highway.includes(highways[1])) {
+          // jalan tol
           color = "rgba(255, 0, 0, 0.7)";
         }
 
         const widthVal = feature.properties && feature.properties.width
           ? Number(feature.properties.width)
-          : 2;
+          : 1;
 
         const weight = Math.max(1, Math.min(10, widthVal));
 
@@ -79,6 +79,7 @@ export default class RoadManager {
 
   clear() {
     this.roadGraph = null;
+    this.roadIndex.clear();
     this.layerGroup.clearLayers();
   }
 

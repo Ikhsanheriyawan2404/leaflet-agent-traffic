@@ -1,6 +1,8 @@
 import L from "leaflet";
 import GridIndex from "./spatial.index.js";
 import { createAgentIcon } from "../utils/icon.js";
+import { MAX_STEP_EDGE } from "../utils/constant.js";
+import { getRandomSpeedKmh, kmhToMps } from "../utils/helper.js";
 
 export default class AgentManager {
   constructor(map, roadManager) {
@@ -20,13 +22,15 @@ export default class AgentManager {
     return node.out[Math.floor(Math.random() * node.out.length)];
   }
 
-  _buildRoute(roadGraph, startEdgeId, maxSteps = 12) {
+  _buildRoute(roadGraph, startEdgeId, maxSteps = MAX_STEP_EDGE) {
     const route = [];
     let currentEdgeId = startEdgeId;
-    for (let i = 0; i < maxSteps; i += 1) {
+    let steps = 0;
+    while (currentEdgeId != null && steps < maxSteps) {
       if (currentEdgeId === null || currentEdgeId === undefined) break;
       route.push(currentEdgeId);
       currentEdgeId = this._pickNextEdge(roadGraph, currentEdgeId);
+      steps++;
     }
     return route;
   }
@@ -50,7 +54,7 @@ export default class AgentManager {
     el.style.willChange = "transform";
   }
 
-  async createAgents(amount, options) {
+  async createAgents(amount, options = {}) {
     if (!amount || amount <= 0) {
       throw new Error("Amount must be greater than zero.");
     }
@@ -64,8 +68,7 @@ export default class AgentManager {
     const {
       color,
       icon,
-      routeLength = 12,
-      speed = 12
+      speed = kmhToMps(getRandomSpeedKmh())
     } = options;
     
     if (edges.length === 0) {
@@ -86,7 +89,7 @@ export default class AgentManager {
       })
 
       marker.addTo(this.layerGroup);
-      const route = this._buildRoute(roadGraph, edge.id, routeLength);
+      const route = this._buildRoute(roadGraph, edge.id);
 
       const heading = this._edgeHeading(edge);
 
@@ -114,18 +117,7 @@ export default class AgentManager {
   clear() {
     this.layerGroup.clearLayers();
     this.agents = [];
-    this.agentIndex = new GridIndex();
-  }
-
-  updateAgentPosition(id, lat, lng, heading) {
-    const agent = this.agents.find((a) => a.id === id);
-    if (!agent) return null;
-    agent.pos = { lat, lng };
-    if (Number.isFinite(heading)) agent.heading = heading;
-    if (agent.marker) agent.marker.setLatLng([lat, lng]);
-    if (Number.isFinite(heading)) this._setMarkerHeading(agent.marker, heading);
-    this.agentIndex.updatePoint(id, lat, lng);
-    return agent;
+    this.agentIndex.clear();
   }
 
   step(deltaSeconds) {
@@ -174,7 +166,7 @@ export default class AgentManager {
     }
   }
 
-  getAgentsData() {
+  getAll() {
     return this.agents;
   }
 }
