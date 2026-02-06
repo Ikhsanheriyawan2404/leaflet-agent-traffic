@@ -87,7 +87,7 @@ await trafficSimulator.generateAgents(5, { icon: '/assets/car.png' });
 ## Sumber data
 - Data jalan diambil dari OpenStreetMap (OSM). Cara yang direkomendasikan: gunakan exporter HOT (Humanitarian OpenStreetMap Team) pada https://export.hotosm.org/v3/ untuk mengekspor area yang diinginkan sebagai GeoJSON.
 - File contoh untuk area Jakarta Timur tersedia di repository sebagai
-[`sample.geojson`](sample.geojson).
+[`sample.geojson`](https://github.com/Ikhsanheriyawan2404/data-jalan-osm-pulau-jawa/blob/main/sample.geojson). atau kalau mau data lebih komplit bisa cek disini -> [`data jalan pulau jawa`](https://github.com/Ikhsanheriyawan2404/data-jalan-osm-pulau-jawa)
 
 ## Format GeoJSON yang dibutuhkan
 - Library mengharapkan GeoJSON FeatureCollection yang berisi feature bertipe `LineString` atau `MultiLineString` mewakili jalan.
