@@ -19,8 +19,31 @@ Pastikan `leaflet` sudah terpasang dan versinya memenuhi peer dependency (lihat 
 ```js
 import AgentTraffic from 'leaflet-agent-traffic';
 
+// Mode 1: Static URL (data di-cache sekali)
 const urlGeoJSON = 'https://pub-425058631f8a4bf298715f06780fe7d2.r2.dev/Roads_in_Jakarta_Timur.geojson';
 const trafficSimulator = new AgentTraffic(map, urlGeoJSON);
+
+// Mode 2: Dynamic URL resolver (ambil ulang per-bounds, cocok untuk GeoServer/PostGIS)
+const roadsUrl = (bounds) => {
+  const sw = bounds.getSouthWest();
+  const ne = bounds.getNorthEast();
+  const w = sw.lng;
+  const s = sw.lat;
+  const e = ne.lng;
+  const n = ne.lat;
+
+  return (
+    'http://localhost:8081/geoserver/ows?' +
+    'service=WFS' +
+    '&version=2.0.0' +
+    '&request=GetFeature' +
+    '&typeName=ne:agent_traffic' +
+    '&outputFormat=application/json' +
+    '&srsName=EPSG:4326' +
+    `&bbox=${w},${s},${e},${n},EPSG:4326`
+  );
+};
+const trafficSimulator = new AgentTraffic(map, roadsUrl);
 ```
 
 **Penjelasan parameter:**

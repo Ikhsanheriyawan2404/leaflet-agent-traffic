@@ -19,14 +19,29 @@ export default class RoadManager {
   }
 
   async load() {
+    if (typeof this.roadsDataUrl === "function") {
+      throw new Error("Dynamic roads data requires bounds. Use load(bounds).");
+    }
     if (this._data) return this._data;
     this._data = await fetchRoadsData(this.roadsDataUrl);
     return this._data;
   }
 
+  async loadForBounds(bounds) {
+    if (typeof this.roadsDataUrl === "function") {
+      const url = this.roadsDataUrl(bounds);
+      if (!url) {
+        throw new Error("Invalid roads data URL from resolver.");
+      }
+      return fetchRoadsData(url, { fetchOptions: { cache: "no-store" } });
+    }
+
+    return this.load();
+  }
+
   async render(bounds) {
-    const data = await this.load();
-    const finalBounds = getBoundsFromInput(bounds)
+    const finalBounds = getBoundsFromInput(bounds);
+    const data = await this.loadForBounds(finalBounds);
     const isAllowedHighway = (highway) => {
       if (!highway) return false;
       if (Array.isArray(highway)) {

@@ -85,8 +85,9 @@ export function featureInBounds(feature, bounds) {
   return false;
 }
 
-export async function fetchRoadsData(url) {
-  const res = await fetch(url);
+export async function fetchRoadsData(url, options = {}) {
+  const { fetchOptions } = options;
+  const res = await fetch(url, fetchOptions);
   if (!res.ok) {
     throw new Error(`Failed to fetch roads data: ${res.status} ${res.statusText}`);
   }
